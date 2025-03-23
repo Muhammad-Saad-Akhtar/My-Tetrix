@@ -1,9 +1,8 @@
+
 import pygame
 import random
 import json
 import os
-import asyncio
-import websockets
 
 pygame.init()
 
@@ -214,9 +213,8 @@ def load_game_state():
     score = state['score']
     return locked_positions, current_piece, next_piece, hold_piece, score
 
-async def game_loop(websocket, _path):
-    # your game loop logic
-
+# Main game loop
+def main():
     win = pygame.display.set_mode((SCREEN_WIDTH + 200, SCREEN_HEIGHT))
     pygame.display.set_caption('Tetris Deluxe')
 
@@ -324,34 +322,7 @@ async def game_loop(websocket, _path):
 
         pygame.display.update()
 
-        # Send game state to the frontend
-        game_state = {
-            'grid': grid,
-            'current_piece': {
-                'x': current_piece.x,
-                'y': current_piece.y,
-                'shape': current_piece.shape,
-                'color': current_piece.color
-            },
-            'next_piece': {
-                'shape': next_piece.shape,
-                'color': next_piece.color
-            },
-            'hold_piece': {
-                'shape': hold_piece.shape,
-                'color': hold_piece.color
-            } if hold_piece else None,
-            'score': score,
-            'level': level,
-            'high_score': get_high_score()
-        }
-        await websocket.send(json.dumps(game_state))
-
     pygame.time.wait(3000)
 
-async def main():
-    async with websockets.serve(game_loop, "localhost", 8765):
-        await asyncio.Future()  # run forever
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
